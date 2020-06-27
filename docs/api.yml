@@ -1,0 +1,186 @@
+openapi: 3.0.2
+info:
+  title: Taskiwi API
+  description: Taskiwi API
+  contact:
+    name: Taskiwi
+    url: https://github.com/zeroclock/taskiwi
+    email: zeroc.reji@gmail.com
+  license:
+    name: License - MIT
+    url: https://opensource.org/licenses/MIT
+  version: '1.0'
+servers:
+  - url: 'https://us-central1-{projectName}.cloudfunctions.net'
+security:
+  - bearerAuth: []
+paths:
+  /tasks:
+    get:
+      tags:
+       - task
+      summary: Get all tasks
+      description: Returns an array of Task model
+      responses:
+        '200':
+          description: A JSON array of Task model
+          content:
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+       - task
+      summary: Upsert a task
+      description: Upsert a task
+      requestBody:
+        description: task to upsert
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: CREATED
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /tags:
+    get:
+      tags:
+       - tag
+      summary: Get all tags
+      description: Returns an array of Tag model
+      responses:
+        '200':
+          description: A JSON array of Tag model
+          content:
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+       - tag
+      summary: Upsert a tag
+      description: Upsert a tag
+      requestBody:
+        description: task to upsert
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '201':
+          description: CREATED
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /apikey:
+    get:
+      tags:
+       - api key
+      summary: Get all api keys
+      description: Returns an array of ApiKey model
+      responses:
+        '200':
+          description: A JSON array of ApiKey model
+          content:
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+       - api key
+      summary: Upsert an api key
+      description: Upsert an api key
+      requestBody:
+        description: api key to upsert
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKey'
+      responses:
+        '201':
+          description: CREATED
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        name:
+          type: string
+          example: Tarou Tanaka
+    ApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        service:
+          type: string
+          example: "Trello"
+        apiKey:
+          type: string
+          example: "1234abcdefgXXXX"
+    Task:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          example: 1
+        title:
+          type: string
+          example: "Fix a bug (#1234)"
+        description:
+          type: string
+          example: Fix order controller to add error handling when receiving wrong request.
+        due:
+          type: string
+          example: "2020-06-12 12:00:00"
+        workLog:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkLog'
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        tagName:
+          type: string
+          example: "#1234"
+    WorkLog:
+      type: object
+      properties:
+        start:
+          type: string
+          example: "2020-06-11 09:30:00"
+        end:
+          type: string
+          example: "2020-06-11 12:00:00"
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
