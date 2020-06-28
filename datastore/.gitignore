@@ -1,3 +1,3 @@
-./.data
-./import/**/*
-!./import/run.sh
+.data
+import/*
+!import/run.sh
