@@ -1,23 +1,17 @@
 package main
 
 import (
-	"net/http"
+	"taskiwi/handler"
+
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
-	e := NewRouter()
-	e.Logger.Fatal(e.Start(":8080"))
-}
-
-func NewRouter() *echo.Echo {
 	e := echo.New()
-
-	e.GET("/hello", helloHandler)
-
-	return e
-}
-
-func helloHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello")
+	handler.InitRouting(e)
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(handler.FirebaseAuthMiddleware)
+	e.Logger.Fatal(e.Start(":8080"))
 }
