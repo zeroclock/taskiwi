@@ -10,23 +10,10 @@ services:
     volumes:
       - ./backend:/go/src
     environment:
-      DATASTORE_EMULATOR_HOST: "datastore:8081"
-      DATASTORE_PROJECT_ID: *gcp_project_id
       TZ: Asia/Tokyo
     ports:
       - "8080:8080"
     tty: true
-    depends_on:
-      - datastore
-  datastore:
-    build: ./datastore
-    volumes:
-      - "./datastore/.data:/datastore/.data"
-    environment:
-      DATASTORE_PROJECT_ID: *gcp_project_id
-      DATASTORE_LISTEN_ADDRESS: 0.0.0.0:8081
-    ports:
-      - "8081:8081"
   frontend:
     build: ./frontend
     volumes:

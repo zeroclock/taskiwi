@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"cloud.google.com/go/datastore"
 	"github.com/labstack/echo"
 	"taskiwi/config"
 )
@@ -23,14 +22,8 @@ func helloHandler(c echo.Context) error {
 
 	ctx := context.Background()
 	config := config.GetConfig()
-	datastoreClient, _ := datastore.NewClient(ctx, config.DSConfig.ProjectID)
 	e := &Employee{
 		Name: "tarou tanaka",
-	}
-	k := datastore.IncompleteKey("Employee", nil)
-	_, err := datastoreClient.Put(ctx, k, e)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	return c.String(http.StatusOK, "Hello")

@@ -10,7 +10,6 @@ import {
   MuiThemeProvider,
   CssBaseline,
 } from '@material-ui/core'
-import SignInWidget from './components/Organisms/SignInWidget'
 
 type AppProps = {
   firebaseApp: firebase.app.App
@@ -50,7 +49,6 @@ const App: React.FC<AppProps> = (props: AppProps) => {
       <CssBaseline />
       <MyAppBar />
       <MainContent />
-      <SignInWidget firebaseApp={props.firebaseApp} />
     </MuiThemeProvider>
   )
 }
