@@ -6,23 +6,24 @@ x-custom:
 
 services:
   app:
-    build: ./backend
+    build: ./src
     volumes:
-      - ./backend:/go/src
+      - ./src:/go/src
     environment:
       TZ: Asia/Tokyo
     ports:
       - "8080:8080"
     tty: true
-  frontend:
-    build: ./frontend
-    volumes:
-      - "./frontend:/usr/src/app"
-    environment:
-      NODE_ENV: environment
-    tty: true
-    command: sh -c "cd taskiwi && yarn start"
-    ports:
-      - "3000:3000"
-    depends_on:
-      - app
+#    command: sh -c "cd web/taskiwi && yarn build"
+#  frontend:
+#    build: ./frontend
+#    volumes:
+#      - "./frontend:/usr/src/app"
+#    environment:
+#      NODE_ENV: environment
+#    tty: true
+#    command: sh -c "cd taskiwi && yarn start"
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - app
