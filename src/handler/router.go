@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"io/ioutil"
-	"encoding/json"
 
 	"github.com/labstack/echo"
 	"taskiwi/config"
@@ -36,10 +35,5 @@ func indexHandler(c echo.Context) error {
 }
 
 func allTaskHandler(c echo.Context) error {
-	jsonData, err := json.Marshal(config.GlobalConf.CData)
-	if err != nil {
-		log.Println(err)
-	}
-
-	return c.JSON(http.StatusOK, string(jsonData))
+	return c.JSON(http.StatusOK, config.GlobalConf.CData)
 }

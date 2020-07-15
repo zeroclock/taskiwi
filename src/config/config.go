@@ -40,6 +40,11 @@ func InitConfig(path string) *Config {
 	reader := csv.NewReader(csvFile)
 	reader.FieldsPerRecord = -1
 
+	// skip header line
+	if _, err := reader.Read(); err != nil {
+		log.Println(err)
+	}
+
 	csvData, err := reader.ReadAll()
 	if err != nil {
 		log.Println(err)
