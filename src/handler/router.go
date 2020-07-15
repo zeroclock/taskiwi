@@ -8,11 +8,13 @@ import (
 
 	"github.com/labstack/echo"
 	"taskiwi/config"
+	"taskiwi/utils"
 )
 
 func InitRouting(e *echo.Echo) {
 	e.GET("/", indexHandler)
 	e.GET("/all", allTaskHandler)
+	e.GET("/allTags", allTagsHandler)
 }
 
 type Employee struct {
@@ -36,4 +38,13 @@ func indexHandler(c echo.Context) error {
 
 func allTaskHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, config.GlobalConf.CData)
+}
+
+func allTagsHandler(c echo.Context) error {
+	var tags []string
+	for _, v := range *config.GlobalConf.CData {
+		tags = append(tags, v.Tags...)
+	}
+	
+	return c.JSON(http.StatusOK, utils.Unique(tags))
 }

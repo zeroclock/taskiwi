@@ -1,5 +1,7 @@
 package model
 
+type Tags []string
+
 type ClockData struct {
 	Task     string   `json:"task"`
 	Parents  string   `json:"parents"`
