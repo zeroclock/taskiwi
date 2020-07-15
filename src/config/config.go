@@ -5,27 +5,18 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"taskiwi/model"
 )
 
 type Config struct {
 	IData *InputData
-	CData *[]ClockData
+	CData *[]model.ClockData
 }
 
 type InputData struct {
 	FilePath    string
 	FileContent [][]string
-}
-
-type ClockData struct {
-	Task     string   `json:"task"`
-	Parents  string   `json:"parents"`
-	Category string   `json:"category"`
-	Start    string   `json:"start"`
-	End      string   `json:"end"`
-	Effort   string   `json:"effort"`
-	Ishabit  string   `json:"ishabit"`
-	Tags     []string `json:"tags"`
 }
 
 var GlobalConf *Config
@@ -55,8 +46,8 @@ func InitConfig(path string) *Config {
 		FileContent: csvData,
 	}
 
-	var cdata ClockData
-	var cdatas []ClockData
+	var cdata model.ClockData
+	var cdatas []model.ClockData
 
 	for _, each := range csvData {
 		cdata.Task = each[0]
