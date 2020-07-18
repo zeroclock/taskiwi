@@ -9,4 +9,4 @@ tasks:
       # - cd /go/src
       - go run main.go --pid-file=pidfile
     sources:
-      - ./**/*
+      - ./**/*.go

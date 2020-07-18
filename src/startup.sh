@@ -1,3 +1,3 @@
 #!/bin/bash
 
-task run
+task run -w

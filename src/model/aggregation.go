@@ -5,3 +5,5 @@ type WorkTime struct {
 	Time    string `json:"time"`
 	Percent string `json:"percent"`
 }
+
+type WorkTimes []*WorkTime

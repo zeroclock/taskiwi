@@ -3,11 +3,13 @@ package main
 import (
 	"taskiwi/handler"
 	"taskiwi/config"
+	"taskiwi/validation"
 
 	"flag"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/go-playground/validator/v10"
 	"io/ioutil"
 	"log"
 	"os"
@@ -33,6 +35,7 @@ func main() {
 	log.Println(config.GlobalConf.IData.FileContent)
 
 	e := echo.New()
+	e.Validator = &validation.CustomValidator{Validator: validator.New()}
 	e.Static("/", "./web/taskiwi/build")
 	handler.InitRouting(e)
 	e.Use(middleware.Logger())

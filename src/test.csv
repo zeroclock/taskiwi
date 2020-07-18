@@ -1,0 +1,4 @@
+task,parents,category,start,end,effort,ishabit,tags
+設計書修正,Inbox,,2020-07-07 23:30,2020-07-07 23:45,,,#1234:maintenance
+エラー調査対応,Inbox,,2020-07-08 20:00,2020-07-08 21:00,,,#1233:maintenance
+エラー調査対応,Inbox,,2020-07-07 20:00,2020-07-07 21:00,,,#1233:maintenance
