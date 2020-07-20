@@ -1,15 +1,15 @@
 package main
 
 import (
-	"taskiwi/handler"
 	"taskiwi/config"
+	"taskiwi/handler"
 	"taskiwi/validation"
 
 	"flag"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/go-playground/validator/v10"
 	"io/ioutil"
 	"log"
 	"os"

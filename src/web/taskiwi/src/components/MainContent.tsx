@@ -5,23 +5,15 @@ import {
   Theme,
   Grid,
   Paper,
-  Button,
-  Fab,
-  Badge,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  Input,
+  InputLabel,
+  FormControl,
+  Select,
+  Chip,
 } from '@material-ui/core'
-
-import MailIcon from '@material-ui/icons/Mail'
-import ShareIcon from '@material-ui/icons/Share'
-import ListAlt from '@material-ui/icons/ListAlt'
-import PersonAdd from '@material-ui/icons/PersonAdd'
-import Lock from '@material-ui/icons/Lock'
-import Chat from '@material-ui/icons/Chat'
-import Assessment from '@material-ui/icons/Assessment'
-import CloudUpload from '@material-ui/icons/CloudUpload'
-import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn'
-import AddIcon from '@material-ui/icons/Add'
-import EditIcon from '@material-ui/icons/Edit'
-import FavoriteIcon from '@material-ui/icons/Favorite'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,66 +28,86 @@ const useStyles = makeStyles((theme: Theme) =>
         margin: theme.spacing(3),
       },
     },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+      maxWidth: 300,
+    },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
   })
 )
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+}
+
+const tags = [
+  'tagA',
+  'tagB',
+  'tagC',
+  'tagD'
+]
+
 function MainContent() {
   const classes = useStyles()
+  const [tagName, setTagName] = React.useState<string[]>(tags)
+
+  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    const v = event.target.value
+    var values: string[] = []
+    if (v instanceof Array && v !== null) {
+      v.forEach((tag) => {
+        if (typeof tag === 'string') {
+          values.push(tag)
+        }
+      })
+      setTagName(values)
+    }
+  }
+  
   return (
     <Grid container className={classes.root} spacing={3}>
       <Grid item xs={12} justify="center">
         <Paper variant="outlined" elevation={3} className={classes.paper}>
-          <Button variant="contained">Default</Button>
-          <Button variant="contained" color="primary">
-            Primary
-          </Button>
-          <Button variant="contained" color="secondary">
-            Secondary
-          </Button>
-          <Button variant="contained" disabled>
-            Disabled
-          </Button>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Link
-          </Button>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} justify="center">
-        <Paper variant="outlined" elevation={3} className={classes.paper}>
-          <Fab color="primary" aria-label="add">
-            <AddIcon />
-          </Fab>
-          <Fab color="secondary" aria-label="edit">
-            <EditIcon />
-          </Fab>
-          <Fab disabled aria-label="like">
-            <FavoriteIcon />
-          </Fab>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} justify="center">
-        <Paper variant="outlined" elevation={3} className={classes.paper}>
-          <Badge badgeContent={4} color="primary">
-            <MailIcon fontSize="small" />
-          </Badge>
-          <Badge badgeContent={3} color="secondary">
-            <MailIcon />
-          </Badge>
-          <Badge badgeContent={2} color="error">
-            <MailIcon fontSize="large" />
-          </Badge>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} justify="center">
-        <Paper variant="outlined" elevation={3} className={classes.paper}>
-          <ShareIcon />
-          <ListAlt />
-          <PersonAdd />
-          <Lock />
-          <Chat />
-          <Assessment />
-          <CloudUpload />
-          <AssignmentTurnedIn />
+          <FormControl className={classes.formControl}>
+            <InputLabel id="tag-multiple-checkbox-label">Tag</InputLabel>
+            <Select
+              labelId="tag-multiple-checkbox-label"
+              id="tag-multiple-checkbox"
+              multiple
+              value={tagName}
+              onChange={handleChange}
+              input={<Input />}
+              renderValue={(selected: any) => (
+                <div className={classes.chips}>
+                  {selected.map((value: any) => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
+              {tags.map((tag) => (
+                <MenuItem key={tag} value={tag}>
+                  <Checkbox checked={tagName.indexOf(tag) > -1} />
+                  <ListItemText primary={tag} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Paper>
       </Grid>
     </Grid>
