@@ -1,5 +1,5 @@
 export interface WorkTime {
-  Tag: string
-  Time: string
-  Percent: string
+  tag: string
+  time: string
+  percent: string
 }
