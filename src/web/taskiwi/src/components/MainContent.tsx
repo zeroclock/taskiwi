@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   makeStyles,
   createStyles,
@@ -14,6 +14,7 @@ import {
   Select,
   Chip,
 } from '@material-ui/core'
+import { fetchTags } from '../api/tag';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,16 +55,10 @@ const MenuProps = {
   },
 }
 
-const tags = [
-  'tagA',
-  'tagB',
-  'tagC',
-  'tagD'
-]
-
 function MainContent() {
   const classes = useStyles()
-  const [tagName, setTagName] = React.useState<string[]>(tags)
+  const [tagName, setTagName] = React.useState<string[]>([])
+  const [tagList, setTagList] = React.useState<string[]>([])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const v = event.target.value
@@ -77,6 +72,23 @@ function MainContent() {
       setTagName(values)
     }
   }
+
+  const fetchTagsReq = async () => {
+    try {
+      const { data } = await fetchTags()
+      return data
+    } catch (e) {
+      console.log(e)
+      return []
+    }
+  }
+
+  useEffect(() => {
+    const data = fetchTagsReq()
+    data.then(tags => {
+      setTagList(tags)
+    })
+  }, [])
   
   return (
     <Grid container className={classes.root} spacing={3}>
@@ -100,7 +112,7 @@ function MainContent() {
               )}
               MenuProps={MenuProps}
             >
-              {tags.map((tag) => (
+              {tagList.map((tag) => (
                 <MenuItem key={tag} value={tag}>
                   <Checkbox checked={tagName.indexOf(tag) > -1} />
                   <ListItemText primary={tag} />

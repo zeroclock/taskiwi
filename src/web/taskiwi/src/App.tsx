@@ -1,9 +1,7 @@
 import React from 'react'
-// import logo from './logo.svg'
 import './App.css'
 import green from '@material-ui/core/colors/green'
 
-import MyAppBar from './components/MyAppBar'
 import MainContent from './components/MainContent'
 import {
   createMuiTheme,
@@ -43,7 +41,6 @@ const App: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <MyAppBar />
       <MainContent />
     </MuiThemeProvider>
   )
