@@ -20,7 +20,7 @@ func InitRouting(e *echo.Echo) {
 	e.GET("/", indexHandler)
 	e.GET("/all", allTaskHandler)
 	e.GET("/allTags", allTagsHandler)
-	e.POST("/aggregateTaskByTags", aggregateTasksByTags)
+	e.POST("/aggregateTasks", aggregateTasks)
 }
 
 type Employee struct {
@@ -51,16 +51,16 @@ func allTagsHandler(c echo.Context) error {
 	for _, v := range *config.GlobalConf.CData {
 		tags = append(tags, v.Tags...)
 	}
-	
+
 	return c.JSON(http.StatusOK, utils.Unique(tags))
 }
 
-func aggregateTasksByTags(c echo.Context) (err error) {
-	tagsToSearch := new(validation.TagsToSearch)
-	if err = c.Bind(tagsToSearch); err != nil {
+func aggregateTasks(c echo.Context) (err error) {
+	searchCondition := new(validation.AggregateCondition)
+	if err = c.Bind(searchCondition); err != nil {
 		return
 	}
-	if err = c.Validate(tagsToSearch); err != nil {
+	if err = c.Validate(searchCondition); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	var workTimes model.WorkTimes
@@ -69,7 +69,7 @@ func aggregateTasksByTags(c echo.Context) (err error) {
 
 	layout := "2006-01-02 15:04"
 
-	for _, tag := range tagsToSearch.Tags {
+	for _, tag := range searchCondition.Tags {
 		for _, v := range *config.GlobalConf.CData {
 			if hasTag(&v, tag) {
 				start, err := time.Parse(layout, v.Start)

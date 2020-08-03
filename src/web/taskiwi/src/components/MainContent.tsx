@@ -14,7 +14,9 @@ import {
   Select,
   Chip,
 } from '@material-ui/core'
-import { fetchTags } from '../api/tag';
+import { fetchTags } from '../api/tag'
+import { fetchWorkTimes } from '../api/workTimes'
+import { AggregateTaskReq } from '../interface/request'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,8 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
+const ITEM_HEIGHT = 48
+const ITEM_PADDING_TOP = 8
 const MenuProps = {
   PaperProps: {
     style: {
@@ -60,9 +62,11 @@ function MainContent() {
   const [tagName, setTagName] = React.useState<string[]>([])
   const [tagList, setTagList] = React.useState<string[]>([])
 
-  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const handleChange = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
     const v = event.target.value
-    var values: string[] = []
+    const values: string[] = []
     if (v instanceof Array && v !== null) {
       v.forEach((tag) => {
         if (typeof tag === 'string') {
@@ -71,6 +75,14 @@ function MainContent() {
       })
       setTagName(values)
     }
+    const data = fetchWorkTimesReq({
+      tags: values,
+      start: '2020-08-03',
+      end: '2020-08-04'
+    })
+    data.then((workTimes) => {
+      console.log(workTimes)
+    })
   }
 
   const fetchTagsReq = async () => {
@@ -83,13 +95,23 @@ function MainContent() {
     }
   }
 
+  const fetchWorkTimesReq = async (params: AggregateTaskReq) => {
+    try {
+      const { data } = await fetchWorkTimes(params)
+      return data
+    } catch (e) {
+      console.log(e)
+      return []
+    }
+  }
+
   useEffect(() => {
     const data = fetchTagsReq()
-    data.then(tags => {
+    data.then((tags) => {
       setTagList(tags)
     })
   }, [])
-  
+
   return (
     <Grid container className={classes.root} spacing={3}>
       <Grid item xs={12} justify="center">

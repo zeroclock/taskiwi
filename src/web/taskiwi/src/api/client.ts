@@ -7,6 +7,5 @@ export default client = axios.create({
   baseURL: API_ROOT_PATH,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 })
-

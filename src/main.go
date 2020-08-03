@@ -32,10 +32,13 @@ func main() {
 
 	path := "./test.csv"
 	config.GlobalConf = config.InitConfig(path)
-	log.Println(config.GlobalConf.IData.FileContent)
+
+	v := validator.New()
+	v.RegisterValidation("is_date", validation.DateValidation)
 
 	e := echo.New()
-	e.Validator = &validation.CustomValidator{Validator: validator.New()}
+	
+	e.Validator = &validation.CustomValidator{Validator: v}
 	e.Static("/", "./web/taskiwi/build")
 	handler.InitRouting(e)
 	e.Use(middleware.Logger())
