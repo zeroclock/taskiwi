@@ -17,6 +17,8 @@ import {
 import { fetchTags } from '../api/tag'
 import { fetchWorkTimes } from '../api/workTimes'
 import { AggregateTaskReq } from '../interface/request'
+import { Line } from 'react-chartjs-2'
+import WorkTimeTable from './tables/WorkTimeTable'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,8 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
-      maxWidth: 300,
+      width: 500,
     },
     chips: {
       display: 'flex',
@@ -55,6 +56,33 @@ const MenuProps = {
       width: 250,
     },
   },
+}
+
+const data = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      label: 'My First dataset',
+      fill: true,
+      lineTension: 0.1,
+      backgroundColor: 'rgba(75,192,192,0.4)',
+      borderColor: 'rgba(75,192,192,1)',
+      borderCapStyle: 'round',
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: 'square',
+      pointBorderColor: 'rgba(75,192,192,1)',
+      pointBackgroundColor: '#eee',
+      pointBorderWidth: 10,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+      pointHoverBorderColor: 'rgba(220,220,220,1)',
+      pointHoverBorderWidth: 1,
+      pointRadius: 1,
+      pointHitRadius: 10,
+      data: [3, 10, 21, 31, 34, 40, 48]
+    }
+  ]
 }
 
 function MainContent() {
@@ -111,7 +139,7 @@ function MainContent() {
       setTagList(tags)
     })
   }, [])
-
+  
   return (
     <Grid container className={classes.root} spacing={3}>
       <Grid item xs={12} justify="center">
@@ -142,6 +170,21 @@ function MainContent() {
               ))}
             </Select>
           </FormControl>
+        </Paper>
+      </Grid>
+      <Grid item xs={12} justify="center">
+        <Paper variant="outlined" elevation={3}>
+          <WorkTimeTable worktimes={null} />
+        </Paper>
+      </Grid>
+      <Grid item xs={6} justify="center">
+        <Paper variant="outlined" elevation={3}>
+          <Line data={data} />
+        </Paper>
+      </Grid>
+      <Grid item xs={6} justify="center">
+        <Paper variant="outlined" elevation={3}>
+          <Line data={data} />
         </Paper>
       </Grid>
     </Grid>
