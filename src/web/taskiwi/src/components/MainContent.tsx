@@ -14,11 +14,18 @@ import {
   Select,
   Chip,
 } from '@material-ui/core'
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers'
+import DateFnsUtils from '@date-io/date-fns'
 import { fetchTags } from '../api/tag'
 import { fetchWorkTimes } from '../api/workTimes'
 import { AggregateTaskReq } from '../interface/request'
 import { Line } from 'react-chartjs-2'
 import WorkTimeTable from './tables/WorkTimeTable'
+import { WorkTimes } from '../model/WorkTimes'
+import { format } from 'date-fns'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,6 +96,9 @@ function MainContent() {
   const classes = useStyles()
   const [tagName, setTagName] = React.useState<string[]>([])
   const [tagList, setTagList] = React.useState<string[]>([])
+  const [worktimes, setWorktimes] = React.useState<WorkTimes>([])
+  const [from, setFrom] = React.useState<Date | null>(new Date())
+  const [to, setTo] = React.useState<Date | null>(new Date())
 
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
@@ -104,12 +114,36 @@ function MainContent() {
       setTagName(values)
     }
     const data = fetchWorkTimesReq({
-      tags: values,
-      start: '2020-08-03',
-      end: '2020-08-04'
+      tags: values.length ? values : tagList,
+      start: (from != null) ? format(from, 'yyyy-MM-dd') : '',
+      end: (to != null) ? format(to, 'yyyy-MM-dd') : '',
     })
     data.then((workTimes) => {
-      console.log(workTimes)
+      setWorktimes(workTimes)
+    })
+  }
+
+  const handleFromChange = (date: Date | null, _: string | null | undefined) => {
+    setFrom(date)
+    const data = fetchWorkTimesReq({
+      tags: tagName.length ? tagName : tagList,
+      start: (date != null) ? format(date, 'yyyy-MM-dd') : '',
+      end: (to != null) ? format(to, 'yyyy-MM-dd') : '',
+    })
+    data.then((workTimes) => {
+      setWorktimes(workTimes)
+    })
+  }
+
+  const handleToChange = (date: Date | null, _: string | null | undefined) => {
+    setTo(date)
+    const data = fetchWorkTimesReq({
+      tags: tagName.length ? tagName : tagList,
+      start: (from != null) ? format(from, 'yyyy-MM-dd') : '',
+      end: (date != null) ? format(date, 'yyyy-MM-dd') : '',
+    })
+    data.then((workTimes) => {
+      setWorktimes(workTimes)
     })
   }
 
@@ -124,6 +158,7 @@ function MainContent() {
   }
 
   const fetchWorkTimesReq = async (params: AggregateTaskReq) => {
+    console.log(params)
     try {
       const { data } = await fetchWorkTimes(params)
       return data
@@ -135,8 +170,17 @@ function MainContent() {
 
   useEffect(() => {
     const data = fetchTagsReq()
+    const todayStr = format(new Date(), 'yyyy-MM-dd')
     data.then((tags) => {
       setTagList(tags)
+      const worktimes = fetchWorkTimesReq({
+        tags: tags,
+        start: todayStr,
+        end: todayStr
+      })
+      worktimes.then((wt) => {
+        setWorktimes(wt)
+      })
     })
   }, [])
   
@@ -169,12 +213,46 @@ function MainContent() {
                 </MenuItem>
               ))}
             </Select>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Grid container xs={12}>
+                <Grid item xs={6}>
+                  <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy/MM/dd"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="From"
+                    value={from}
+                    onChange={handleFromChange}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change from date'
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy/MM/dd"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="To"
+                    value={to}
+                    onChange={handleToChange}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change to date'
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </MuiPickersUtilsProvider>
           </FormControl>
         </Paper>
       </Grid>
       <Grid item xs={12} justify="center">
         <Paper variant="outlined" elevation={3}>
-          <WorkTimeTable worktimes={null} />
+          <WorkTimeTable worktimes={worktimes} />
         </Paper>
       </Grid>
       <Grid item xs={6} justify="center">

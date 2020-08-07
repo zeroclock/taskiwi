@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { WorkTimes } from '../../model/WorkTimes'
 import { TableHead, TableRow, TableCell, Checkbox, TableContainer, TableBody, TablePagination, makeStyles, Table } from '@material-ui/core'
 
@@ -12,15 +12,19 @@ const headers = [
   { id: 'percent', numeric: true, disablePadding: false, label: 'Percent (%)' },
 ]
 
-const createData = (tag: string, worktime: number, percent: number) => {
-  return { tag, worktime, percent }
+const createRowsFromProps = (props: Props) => {
+  if (props.worktimes != null) {
+    return props.worktimes.map((worktime) => {
+      return {
+        tag: worktime.tag,
+        worktime: worktime.time,
+        percent: worktime.percent,
+      }
+    })
+  } else {
+    return []
+  }
 }
-
-const rows = [
-  createData('#1234', 15, 25),
-  createData('maintenance', 100, 50),
-  createData('#1234', 50, 25),
-]
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const WorkTimeTable: React.FC<Props> = (props: Props) => {
-  console.log(props)
   const classes = useStyles()
+  const rows = createRowsFromProps(props)
 
   return (
     <div className={classes.root}>
@@ -59,7 +63,7 @@ const WorkTimeTable: React.FC<Props> = (props: Props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {rows.map((row: any) => {
               return (
                 <TableRow
                   hover
