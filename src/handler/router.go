@@ -69,18 +69,23 @@ func aggregateTasks(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	var workTimes model.WorkTimes
+	var taskDatas []model.ClockData
 	m := map[string]float64{}
 	var total float64 = 0.0
 
-	for _, tag := range searchCondition.Tags {
+	conditionStart, err := time.Parse(layout_req, searchCondition.Start)
+	if err != nil {
+		log.Println(err)
+	}
+	conditionEnd, err := time.Parse(layout_req, searchCondition.End)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for i, tag := range searchCondition.Tags {
 		for _, v := range *config.GlobalConf.CData {
-			conditionStart, err := time.Parse(layout_req, searchCondition.Start)
-			if err != nil {
-				log.Println(err)
-			}
-			conditionEnd, err := time.Parse(layout_req, searchCondition.End)
-			if err != nil {
-				log.Println(err)
+			if i == 0 && checkRange(&v, conditionStart, conditionEnd) {
+				taskDatas = append(taskDatas, v)
 			}
 			if hasTag(&v, tag) && checkRange(&v, conditionStart, conditionEnd) {
 				start, err := time.Parse(layout, v.Start)
@@ -108,7 +113,10 @@ func aggregateTasks(c echo.Context) (err error) {
 		})
 	}
 
-	return c.JSON(http.StatusOK, workTimes)
+	return c.JSON(http.StatusOK, &model.Response{
+		WorkTimes:  workTimes,
+		ClockDatas: taskDatas,
+	})
 }
 
 func hasTag(task *model.ClockData, tag string) bool {

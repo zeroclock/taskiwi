@@ -7,3 +7,8 @@ type WorkTime struct {
 }
 
 type WorkTimes []*WorkTime
+
+type Response struct {
+	WorkTimes WorkTimes
+	ClockDatas []ClockData
+}

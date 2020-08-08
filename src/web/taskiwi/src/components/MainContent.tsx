@@ -20,11 +20,12 @@ import {
 } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import { fetchTags } from '../api/tag'
-import { fetchWorkTimes } from '../api/workTimes'
+import { fetchAggregation } from '../api/aggregation'
 import { AggregateTaskReq } from '../interface/request'
 import { Line } from 'react-chartjs-2'
 import WorkTimeTable from './tables/WorkTimeTable'
 import { WorkTimes } from '../model/WorkTimes'
+import { Aggregation } from '../model/Aggregation'
 import { format } from 'date-fns'
 import BarChart from './charts/BarChart'
 import DoughnutChart from './charts/DoughnutChart'
@@ -67,31 +68,22 @@ const MenuProps = {
   },
 }
 
-const data = {
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  datasets: [
-    {
-      label: 'My First dataset',
-      fill: true,
-      lineTension: 0.1,
-      backgroundColor: 'rgba(75,192,192,0.4)',
-      borderColor: 'rgba(75,192,192,1)',
-      borderCapStyle: 'round',
-      borderDash: [],
-      borderDashOffset: 0.0,
-      borderJoinStyle: 'square',
-      pointBorderColor: 'rgba(75,192,192,1)',
-      pointBackgroundColor: '#eee',
-      pointBorderWidth: 10,
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-      pointHoverBorderColor: 'rgba(220,220,220,1)',
-      pointHoverBorderWidth: 1,
-      pointRadius: 1,
-      pointHitRadius: 10,
-      data: [3, 10, 21, 31, 34, 40, 48],
-    },
-  ],
+const emptyAggregation: Aggregation = {
+  WorkTimes: [{
+    tag: '',
+    time: '',
+    percent: '',
+  }],
+  ClockDatas: [{
+    task: '',
+    parents: '',
+    category: '',
+    start: '',
+    end: '',
+    effort: '',
+    ishabit: '',
+    tags: [],
+  }]
 }
 
 function MainContent() {
@@ -115,13 +107,13 @@ function MainContent() {
       })
       setTagName(values)
     }
-    const data = fetchWorkTimesReq({
+    const data = fetchAggregationReq({
       tags: values.length ? values : tagList,
       start: from != null ? format(from, 'yyyy-MM-dd') : '',
       end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
-    data.then((workTimes) => {
-      setWorktimes(workTimes)
+    data.then((aggregation) => {
+      setWorktimes(aggregation.WorkTimes)
     })
   }
 
@@ -130,25 +122,26 @@ function MainContent() {
     _: string | null | undefined
   ) => {
     setFrom(date)
-    const data = fetchWorkTimesReq({
+    const data = fetchAggregationReq({
       tags: tagName.length ? tagName : tagList,
       start: date != null ? format(date, 'yyyy-MM-dd') : '',
       end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
-    data.then((workTimes) => {
-      setWorktimes(workTimes)
+    data.then((aggregation) => {
+      console.log(aggregation)
+      setWorktimes(aggregation.WorkTimes)
     })
   }
 
   const handleToChange = (date: Date | null, _: string | null | undefined) => {
     setTo(date)
-    const data = fetchWorkTimesReq({
+    const data = fetchAggregationReq({
       tags: tagName.length ? tagName : tagList,
       start: from != null ? format(from, 'yyyy-MM-dd') : '',
       end: date != null ? format(date, 'yyyy-MM-dd') : '',
     })
-    data.then((workTimes) => {
-      setWorktimes(workTimes)
+    data.then((aggregation) => {
+      setWorktimes(aggregation.WorkTimes)
     })
   }
 
@@ -162,14 +155,13 @@ function MainContent() {
     }
   }
 
-  const fetchWorkTimesReq = async (params: AggregateTaskReq) => {
-    console.log(params)
+  const fetchAggregationReq = async (params: AggregateTaskReq) => {
     try {
-      const { data } = await fetchWorkTimes(params)
+      const { data } = await fetchAggregation(params)
       return data
     } catch (e) {
       console.log(e)
-      return []
+      return emptyAggregation
     }
   }
 
@@ -178,13 +170,13 @@ function MainContent() {
     const todayStr = format(new Date(), 'yyyy-MM-dd')
     data.then((tags) => {
       setTagList(tags)
-      const worktimes = fetchWorkTimesReq({
+      const data = fetchAggregationReq({
         tags: tags,
         start: todayStr,
         end: todayStr,
       })
-      worktimes.then((wt) => {
-        setWorktimes(wt)
+      data.then((aggregation) => {
+        setWorktimes(aggregation.WorkTimes)
       })
     })
   }, [])
