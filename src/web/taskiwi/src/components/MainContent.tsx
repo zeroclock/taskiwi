@@ -26,6 +26,8 @@ import { Line } from 'react-chartjs-2'
 import WorkTimeTable from './tables/WorkTimeTable'
 import { WorkTimes } from '../model/WorkTimes'
 import { format } from 'date-fns'
+import BarChart from './charts/BarChart'
+import DoughnutChart from './charts/DoughnutChart'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,9 +89,9 @@ const data = {
       pointHoverBorderWidth: 1,
       pointRadius: 1,
       pointHitRadius: 10,
-      data: [3, 10, 21, 31, 34, 40, 48]
-    }
-  ]
+      data: [3, 10, 21, 31, 34, 40, 48],
+    },
+  ],
 }
 
 function MainContent() {
@@ -115,20 +117,23 @@ function MainContent() {
     }
     const data = fetchWorkTimesReq({
       tags: values.length ? values : tagList,
-      start: (from != null) ? format(from, 'yyyy-MM-dd') : '',
-      end: (to != null) ? format(to, 'yyyy-MM-dd') : '',
+      start: from != null ? format(from, 'yyyy-MM-dd') : '',
+      end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
     data.then((workTimes) => {
       setWorktimes(workTimes)
     })
   }
 
-  const handleFromChange = (date: Date | null, _: string | null | undefined) => {
+  const handleFromChange = (
+    date: Date | null,
+    _: string | null | undefined
+  ) => {
     setFrom(date)
     const data = fetchWorkTimesReq({
       tags: tagName.length ? tagName : tagList,
-      start: (date != null) ? format(date, 'yyyy-MM-dd') : '',
-      end: (to != null) ? format(to, 'yyyy-MM-dd') : '',
+      start: date != null ? format(date, 'yyyy-MM-dd') : '',
+      end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
     data.then((workTimes) => {
       setWorktimes(workTimes)
@@ -139,8 +144,8 @@ function MainContent() {
     setTo(date)
     const data = fetchWorkTimesReq({
       tags: tagName.length ? tagName : tagList,
-      start: (from != null) ? format(from, 'yyyy-MM-dd') : '',
-      end: (date != null) ? format(date, 'yyyy-MM-dd') : '',
+      start: from != null ? format(from, 'yyyy-MM-dd') : '',
+      end: date != null ? format(date, 'yyyy-MM-dd') : '',
     })
     data.then((workTimes) => {
       setWorktimes(workTimes)
@@ -176,14 +181,14 @@ function MainContent() {
       const worktimes = fetchWorkTimesReq({
         tags: tags,
         start: todayStr,
-        end: todayStr
+        end: todayStr,
       })
       worktimes.then((wt) => {
         setWorktimes(wt)
       })
     })
   }, [])
-  
+
   return (
     <Grid container className={classes.root} spacing={3}>
       <Grid item xs={12} justify="center">
@@ -226,7 +231,7 @@ function MainContent() {
                     value={from}
                     onChange={handleFromChange}
                     KeyboardButtonProps={{
-                      'aria-label': 'change from date'
+                      'aria-label': 'change from date',
                     }}
                   />
                 </Grid>
@@ -241,7 +246,7 @@ function MainContent() {
                     value={to}
                     onChange={handleToChange}
                     KeyboardButtonProps={{
-                      'aria-label': 'change to date'
+                      'aria-label': 'change to date',
                     }}
                   />
                 </Grid>
@@ -257,12 +262,12 @@ function MainContent() {
       </Grid>
       <Grid item xs={6} justify="center">
         <Paper variant="outlined" elevation={3}>
-          <Line data={data} />
+          <BarChart worktimes={worktimes} />
         </Paper>
       </Grid>
       <Grid item xs={6} justify="center">
         <Paper variant="outlined" elevation={3}>
-          <Line data={data} />
+          <DoughnutChart worktimes={worktimes} />
         </Paper>
       </Grid>
     </Grid>

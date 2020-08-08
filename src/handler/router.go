@@ -16,6 +16,11 @@ import (
 	"github.com/labstack/echo"
 )
 
+const layout = "2006-01-02 15:04"
+
+// received date's format
+const layout_req = "2006-01-02"
+
 func InitRouting(e *echo.Echo) {
 	e.GET("/", indexHandler)
 	e.GET("/all", allTaskHandler)
@@ -33,12 +38,12 @@ func indexHandler(c echo.Context) error {
 		log.Println("[WARNING] Failed to load index.html")
 	}
 	defer f.Close()
-	
+
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		log.Println("[WARNING] Failed to read from file buffer")
 	}
-	
+
 	return c.HTML(http.StatusOK, string(b))
 }
 
@@ -67,11 +72,17 @@ func aggregateTasks(c echo.Context) (err error) {
 	m := map[string]float64{}
 	var total float64 = 0.0
 
-	layout := "2006-01-02 15:04"
-
 	for _, tag := range searchCondition.Tags {
 		for _, v := range *config.GlobalConf.CData {
-			if hasTag(&v, tag) {
+			conditionStart, err := time.Parse(layout_req, searchCondition.Start)
+			if err != nil {
+				log.Println(err)
+			}
+			conditionEnd, err := time.Parse(layout_req, searchCondition.End)
+			if err != nil {
+				log.Println(err)
+			}
+			if hasTag(&v, tag) && checkRange(&v, conditionStart, conditionEnd) {
 				start, err := time.Parse(layout, v.Start)
 				if err != nil {
 					log.Println(err)
@@ -91,8 +102,8 @@ func aggregateTasks(c echo.Context) (err error) {
 
 	for k, v := range m {
 		workTimes = append(workTimes, &model.WorkTime{
-			Tag: k,
-			Time: fmt.Sprint(v),
+			Tag:     k,
+			Time:    fmt.Sprint(v),
 			Percent: fmt.Sprint(v / total),
 		})
 	}
@@ -107,4 +118,19 @@ func hasTag(task *model.ClockData, tag string) bool {
 		}
 	}
 	return false
+}
+
+func checkRange(task *model.ClockData, start time.Time, end time.Time) bool {
+	clockedTimeStart, err := time.Parse(layout, task.Start)
+	hour := time.Duration(clockedTimeStart.Hour())
+	minute := time.Duration(clockedTimeStart.Minute())
+	second := time.Duration(clockedTimeStart.Second())
+	clockedTimeStart = clockedTimeStart.Add(-hour * time.Hour)
+	clockedTimeStart = clockedTimeStart.Add(-minute * time.Minute)
+	clockedTimeStart = clockedTimeStart.Add(-second * time.Second)
+	if err != nil {
+		return false
+	}
+	// it is expected that start and end are the same date
+	return !start.After(clockedTimeStart) && !end.Before(clockedTimeStart)
 }

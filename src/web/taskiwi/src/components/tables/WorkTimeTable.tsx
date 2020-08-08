@@ -1,6 +1,16 @@
 import React, { useEffect } from 'react'
 import { WorkTimes } from '../../model/WorkTimes'
-import { TableHead, TableRow, TableCell, Checkbox, TableContainer, TableBody, TablePagination, makeStyles, Table } from '@material-ui/core'
+import {
+  TableHead,
+  TableRow,
+  TableCell,
+  Checkbox,
+  TableContainer,
+  TableBody,
+  TablePagination,
+  makeStyles,
+  Table,
+} from '@material-ui/core'
 
 interface Props {
   worktimes: WorkTimes | null
@@ -8,7 +18,12 @@ interface Props {
 
 const headers = [
   { id: 'tag', numeric: false, disablePadding: true, label: 'Tag' },
-  { id: 'worktime', numeric: true, disablePadding: false, label: 'Work Time (minutes)' },
+  {
+    id: 'worktime',
+    numeric: true,
+    disablePadding: false,
+    label: 'Work Time (minutes)',
+  },
   { id: 'percent', numeric: true, disablePadding: false, label: 'Percent (%)' },
 ]
 
@@ -31,8 +46,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '750px',
     margin: 'auto',
   },
-  table: {
-  },
+  table: {},
 }))
 
 const WorkTimeTable: React.FC<Props> = (props: Props) => {
@@ -65,15 +79,12 @@ const WorkTimeTable: React.FC<Props> = (props: Props) => {
           <TableBody>
             {rows.map((row: any) => {
               return (
-                <TableRow
-                  hover
-                  key={row.tag}
-                >
+                <TableRow hover key={row.tag}>
                   <TableCell component="th" scope="row" padding="none">
                     {row.tag}
                   </TableCell>
                   <TableCell align="right">{row.worktime}</TableCell>
-                  <TableCell align="right">{row.percent}</TableCell>
+                  <TableCell align="right">{Math.round(row.percent * 100)}</TableCell>
                 </TableRow>
               )
             })}

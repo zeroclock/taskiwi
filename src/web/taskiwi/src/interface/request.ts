@@ -1,5 +1,5 @@
-export interface AggregateTaskReq{
-  tags: string[];
-  start: string;
-  end: string;
+export interface AggregateTaskReq {
+  tags: string[]
+  start: string
+  end: string
 }
