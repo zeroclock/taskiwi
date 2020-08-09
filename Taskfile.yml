@@ -1,0 +1,12 @@
+version: '2'
+
+tasks:
+  run:
+    cmds:
+      - cmd: kill -TERM `cat pidfile`
+        ignore_error: true
+      # - cd /go/src/web/taskiwi && yarn build
+      # - cd /go/src
+      - go run main.go --pid-file=pidfile
+    sources:
+      - ./**/*.go
