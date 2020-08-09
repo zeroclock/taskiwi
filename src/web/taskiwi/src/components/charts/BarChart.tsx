@@ -10,9 +10,7 @@ export interface Props {
 const BarChart: React.FC<Props> = (props: Props) => {
   const data = createDataFromWorktimes(props.worktimes, 'bar')
 
-  return (
-    <Bar data={data} />
-  )
+  return <Bar data={data} />
 }
 
 export default BarChart

@@ -75,21 +75,25 @@ const MenuProps = {
 }
 
 const emptyAggregation: Aggregation = {
-  WorkTimes: [{
-    tag: '',
-    time: '',
-    percent: '',
-  }],
-  ClockDatas: [{
-    task: '',
-    parents: '',
-    category: '',
-    start: '',
-    end: '',
-    effort: '',
-    ishabit: '',
-    tags: [],
-  }]
+  WorkTimes: [
+    {
+      tag: '',
+      time: '',
+      percent: '',
+    },
+  ],
+  ClockDatas: [
+    {
+      task: '',
+      parents: '',
+      category: '',
+      start: '',
+      end: '',
+      effort: '',
+      ishabit: '',
+      tags: [],
+    },
+  ],
 }
 
 function MainContent() {
@@ -103,12 +107,16 @@ function MainContent() {
   const [cData, setCData] = React.useState<ClockDatas>([])
 
   const clockDatasToTimeLine = (clockdatas: ClockDatas): string => {
-    return clockdatas.map((clockdata) => {
-      const time = `${clockdata.start.substr(10)} - ${clockdata.end.substr(10)}`
-      const task = clockdata.task
-      const tags = clockdata.tags.join('/')
-      return `${time} ${task} 【${tags}】`
-    }).join('\n')
+    return clockdatas
+      .map((clockdata) => {
+        const time = `${clockdata.start.substr(10)} - ${clockdata.end.substr(
+          10
+        )}`
+        const task = clockdata.task
+        const tags = clockdata.tags.join('/')
+        return `${time} ${task} 【${tags}】`
+      })
+      .join('\n')
   }
 
   const handleChange = (
@@ -161,10 +169,13 @@ function MainContent() {
     })
   }
 
-  const handlePickDateChange = (date: Date | null, _: string | null | undefined) => {
+  const handlePickDateChange = (
+    date: Date | null,
+    _: string | null | undefined
+  ) => {
     setPickDate(date)
     const data = fetchTasksByDate(
-      date != null ? format(date, 'yyyy-MM-dd') : '',
+      date != null ? format(date, 'yyyy-MM-dd') : ''
     )
     data.then((d) => {
       setCData(d)

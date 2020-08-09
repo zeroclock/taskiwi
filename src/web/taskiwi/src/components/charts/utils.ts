@@ -1,17 +1,23 @@
 import { WorkTimes } from '../../model/WorkTimes'
 
-const generateRandomColorHex = () => Math.floor(Math.random()*16777215).toString(16);
+const generateRandomColorHex = () =>
+  Math.floor(Math.random() * 16777215).toString(16)
 
-export type ChartType = "bar" | "doughnut"
+export type ChartType = 'bar' | 'doughnut'
 
-export const createDataFromWorktimes = (worktimes: WorkTimes, type: ChartType) => {
-  var labels: string[] = []
-  var data: number[] = []
-  var colors: string[] = []
+export const createDataFromWorktimes = (
+  worktimes: WorkTimes,
+  type: ChartType
+) => {
+  const labels: string[] = []
+  const data: number[] = []
+  const colors: string[] = []
   worktimes.map((worktime) => {
     labels.push(worktime.tag)
     data.push(parseInt(worktime.time))
-    colors.push((type != 'bar') ? '#' + generateRandomColorHex() : 'rgba(75,192,192,0.4)')
+    colors.push(
+      type != 'bar' ? '#' + generateRandomColorHex() : 'rgba(75,192,192,0.4)'
+    )
   })
   const datasets = [
     {
@@ -36,5 +42,5 @@ export const createDataFromWorktimes = (worktimes: WorkTimes, type: ChartType) =
       data: data,
     },
   ]
-  return {labels, datasets}
+  return { labels, datasets }
 }

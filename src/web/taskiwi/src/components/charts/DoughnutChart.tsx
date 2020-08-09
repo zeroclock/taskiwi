@@ -10,9 +10,7 @@ export interface Props {
 const DoughnutChartt: React.FC<Props> = (props: Props) => {
   const data = createDataFromWorktimes(props.worktimes, 'doughnut')
 
-  return (
-    <Doughnut data={data} />
-  )
+  return <Doughnut data={data} />
 }
 
 export default DoughnutChartt

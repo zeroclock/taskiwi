@@ -29,9 +29,9 @@ const headers = [
 
 const createRowsFromProps = (props: Props) => {
   if (props.worktimes != null) {
-    var totalTime = 0
-    var totalPercent = 0.0
-    var rows = props.worktimes.map((worktime) => {
+    let totalTime = 0
+    let totalPercent = 0.0
+    const rows = props.worktimes.map((worktime) => {
       totalTime += parseInt(worktime.time)
       totalPercent += parseFloat(worktime.percent)
       return {
@@ -53,7 +53,7 @@ const createRowsFromProps = (props: Props) => {
 
 const minuteToHM = (minute: number): string => {
   const hours = Math.floor(minute / 60)
-  const min = minute - (hours * 60)
+  const min = minute - hours * 60
   return hours + ':' + ('00' + min.toString()).slice(-2)
 }
 
@@ -100,7 +100,9 @@ const WorkTimeTable: React.FC<Props> = (props: Props) => {
                     {row.tag}
                   </TableCell>
                   <TableCell align="right">{row.worktime}</TableCell>
-                  <TableCell align="right">{Math.round(row.percent * 100)}</TableCell>
+                  <TableCell align="right">
+                    {Math.round(row.percent * 100)}
+                  </TableCell>
                 </TableRow>
               )
             })}
