@@ -1,14 +1,41 @@
 import { WorkTimes } from '../../model/WorkTimes'
 
-const generateRandomColorHex = () =>
+const generateRandomColorHex = (): string =>
   Math.floor(Math.random() * 16777215).toString(16)
 
 export type ChartType = 'bar' | 'doughnut'
 
+export interface DataSet {
+  label: string
+  fill: boolean
+  lineTension: number
+  backgroundColor: string[]
+  borderColor: string
+  borderCapStyle: string
+  borderDash: string[]
+  borderDashOffset: number
+  borderJoinStyle: string
+  pointBorderColor: string
+  pointBackgroundColor: string
+  pointBorderWidth: number
+  pointHoverRadius: number
+  pointHoverBackgroundColor: string
+  pointHoverBorderColor: string
+  pointHoverBorderWidth: number
+  pointRadius: number
+  pointHitRadius: number
+  data: number[]
+}
+
+export interface ChartData {
+  labels: string[]
+  datasets: DataSet[]
+}
+
 export const createDataFromWorktimes = (
   worktimes: WorkTimes,
   type: ChartType
-) => {
+): ChartData => {
   const labels: string[] = []
   const data: number[] = []
   const colors: string[] = []

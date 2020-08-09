@@ -31,6 +31,7 @@ import BarChart from './charts/BarChart'
 import DoughnutChart from './charts/DoughnutChart'
 import { fetchTasksByDate } from '../api/task'
 import { ClockDatas } from '../model/ClockDatas'
+import { Tags } from '../model/Tags'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -96,7 +97,7 @@ const emptyAggregation: Aggregation = {
   ],
 }
 
-function MainContent() {
+const MainContent: React.FC = () => {
   const classes = useStyles()
   const [tagName, setTagName] = React.useState<string[]>([])
   const [tagList, setTagList] = React.useState<string[]>([])
@@ -119,9 +120,23 @@ function MainContent() {
       .join('\n')
   }
 
+  const fetchAggregationReq = async (
+    params: AggregateTaskReq
+  ): Promise<Aggregation> => {
+    try {
+      const { data } = await fetchAggregation(params)
+      if (Array.isArray(data.WorkTimes) && Array.isArray(data.ClockDatas)) {
+        return data
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    return emptyAggregation
+  }
+
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
+  ): void => {
     const v = event.target.value
     const values: string[] = []
     if (v instanceof Array && v !== null) {
@@ -142,10 +157,7 @@ function MainContent() {
     })
   }
 
-  const handleFromChange = (
-    date: Date | null,
-    _: string | null | undefined
-  ) => {
+  const handleFromChange = (date: Date | null): void => {
     setFrom(date)
     const data = fetchAggregationReq({
       tags: tagName.length ? tagName : tagList,
@@ -157,7 +169,7 @@ function MainContent() {
     })
   }
 
-  const handleToChange = (date: Date | null, _: string | null | undefined) => {
+  const handleToChange = (date: Date | null): void => {
     setTo(date)
     const data = fetchAggregationReq({
       tags: tagName.length ? tagName : tagList,
@@ -169,10 +181,7 @@ function MainContent() {
     })
   }
 
-  const handlePickDateChange = (
-    date: Date | null,
-    _: string | null | undefined
-  ) => {
+  const handlePickDateChange = (date: Date | null): void => {
     setPickDate(date)
     const data = fetchTasksByDate(
       date != null ? format(date, 'yyyy-MM-dd') : ''
@@ -182,7 +191,7 @@ function MainContent() {
     })
   }
 
-  const fetchTagsReq = async () => {
+  const fetchTagsReq = async (): Promise<Tags> => {
     try {
       const { data } = await fetchTags()
       return data
@@ -190,18 +199,6 @@ function MainContent() {
       console.log(e)
       return []
     }
-  }
-
-  const fetchAggregationReq = async (params: AggregateTaskReq) => {
-    try {
-      const { data } = await fetchAggregation(params)
-      if (Array.isArray(data.WorkTimes) && Array.isArray(data.ClockDatas)) {
-        return data
-      }
-    } catch (e) {
-      console.log(e)
-    }
-    return emptyAggregation
   }
 
   useEffect(() => {
@@ -233,7 +230,7 @@ function MainContent() {
               value={tagName}
               onChange={handleChange}
               input={<Input />}
-              renderValue={(selected: any) => (
+              renderValue={(selected: any): React.ReactNode => (
                 <div className={classes.chips}>
                   {selected.map((value: any) => (
                     <Chip key={value} label={value} className={classes.chip} />

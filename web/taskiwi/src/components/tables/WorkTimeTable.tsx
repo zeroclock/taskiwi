@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { WorkTimes } from '../../model/WorkTimes'
 import {
   TableHead,
   TableRow,
   TableCell,
-  Checkbox,
   TableContainer,
   TableBody,
   TablePagination,
@@ -14,6 +13,12 @@ import {
 
 interface Props {
   worktimes: WorkTimes | null
+}
+
+interface Row {
+  tag: string
+  worktime: string
+  percent: string
 }
 
 const headers = [
@@ -27,7 +32,13 @@ const headers = [
   { id: 'percent', numeric: true, disablePadding: false, label: 'Percent (%)' },
 ]
 
-const createRowsFromProps = (props: Props) => {
+const minuteToHM = (minute: number): string => {
+  const hours = Math.floor(minute / 60)
+  const min = minute - hours * 60
+  return hours + ':' + ('00' + min.toString()).slice(-2)
+}
+
+const createRowsFromProps = (props: Props): Row[] => {
   if (props.worktimes != null) {
     let totalTime = 0
     let totalPercent = 0.0
@@ -51,13 +62,7 @@ const createRowsFromProps = (props: Props) => {
   }
 }
 
-const minuteToHM = (minute: number): string => {
-  const hours = Math.floor(minute / 60)
-  const min = minute - hours * 60
-  return hours + ':' + ('00' + min.toString()).slice(-2)
-}
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     maxWidth: '750px',
     margin: 'auto',
@@ -115,8 +120,12 @@ const WorkTimeTable: React.FC<Props> = (props: Props) => {
         count={rows.length}
         rowsPerPage={5}
         page={1}
-        onChangePage={() => {}}
-        onChangeRowsPerPage={() => {}}
+        onChangePage={(): void => {
+          console.log('TODO: implement table pagination')
+        }}
+        onChangeRowsPerPage={(): void => {
+          console.log('TODO: implement table pagination')
+        }}
       />
     </div>
   )
