@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"sort"
 	"time"
 
@@ -31,7 +30,7 @@ func InitRouting(e *echo.Echo) {
 }
 
 func indexHandler(c echo.Context) error {
-	f, err := os.Open("./web/taskiwi/build/index.html")
+	f, err := Assets.Open("/web/taskiwi/build/index.html")
 	if err != nil {
 		log.Println("[WARNING] Failed to load index.html")
 	}
