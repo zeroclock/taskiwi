@@ -13,6 +13,10 @@ type (
 		End string `json:"end" validate:"required,is_date"`
 	}
 
+	TaskByDateCondition struct {
+		Date string `json:"date" validate:"required,is_date"`
+	}
+
 	CustomValidator struct {
 		Validator *validator.Validate
 	}

@@ -22,7 +22,6 @@ import DateFnsUtils from '@date-io/date-fns'
 import { fetchTags } from '../api/tag'
 import { fetchAggregation } from '../api/aggregation'
 import { AggregateTaskReq } from '../interface/request'
-import { Line } from 'react-chartjs-2'
 import WorkTimeTable from './tables/WorkTimeTable'
 import { WorkTimes } from '../model/WorkTimes'
 import { Aggregation } from '../model/Aggregation'
@@ -158,11 +157,13 @@ function MainContent() {
   const fetchAggregationReq = async (params: AggregateTaskReq) => {
     try {
       const { data } = await fetchAggregation(params)
-      return data
+      if (Array.isArray(data.WorkTimes) && Array.isArray(data.ClockDatas)) {
+        return data
+      }
     } catch (e) {
       console.log(e)
-      return emptyAggregation
     }
+    return emptyAggregation
   }
 
   useEffect(() => {

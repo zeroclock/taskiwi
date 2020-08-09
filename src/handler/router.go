@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	"taskiwi/config"
@@ -26,10 +27,7 @@ func InitRouting(e *echo.Echo) {
 	e.GET("/all", allTaskHandler)
 	e.GET("/allTags", allTagsHandler)
 	e.POST("/aggregateTasks", aggregateTasks)
-}
-
-type Employee struct {
-	Name string
+	e.POST("/taskByDate", taskByDateHandler)
 }
 
 func indexHandler(c echo.Context) error {
@@ -60,6 +58,37 @@ func allTagsHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.Unique(tags))
 }
 
+func taskByDateHandler(c echo.Context) (err error) {
+	searchCondition := new(validation.TaskByDateCondition)
+	if err = c.Bind(searchCondition); err != nil {
+		return
+	}
+	if err = c.Validate(searchCondition); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	conditionDate, err := time.Parse(layout_req, searchCondition.Date)
+	if err != nil {
+		log.Println(err)
+	}
+	taskDatas := []model.ClockData{}
+	for _, v := range *config.GlobalConf.CData {
+		clockedDate, err := time.Parse(layout, v.Start)
+		if err != nil {
+			log.Println(err)
+		}
+		clockedDate = utils.TruncateDateHMS(clockedDate)
+		if conditionDate.Equal(clockedDate) {
+			taskDatas = append(taskDatas, v)
+		}
+	}
+	sort.SliceStable(taskDatas, func(i, j int) bool {
+		startA, _ := time.Parse(layout, taskDatas[i].Start)
+		startB, _ := time.Parse(layout, taskDatas[j].Start)
+		return startA.Before(startB)
+	})
+	return c.JSON(http.StatusOK, taskDatas)
+}
+
 func aggregateTasks(c echo.Context) (err error) {
 	searchCondition := new(validation.AggregateCondition)
 	if err = c.Bind(searchCondition); err != nil {
@@ -84,23 +113,25 @@ func aggregateTasks(c echo.Context) (err error) {
 
 	for i, tag := range searchCondition.Tags {
 		for _, v := range *config.GlobalConf.CData {
-			if i == 0 && checkRange(&v, conditionStart, conditionEnd) {
-				taskDatas = append(taskDatas, v)
-			}
-			if hasTag(&v, tag) && checkRange(&v, conditionStart, conditionEnd) {
-				start, err := time.Parse(layout, v.Start)
-				if err != nil {
-					log.Println(err)
+			if checkRange(&v, conditionStart, conditionEnd) {
+				if hasTag(&v, tag) {
+					start, err := time.Parse(layout, v.Start)
+					if err != nil {
+						log.Println(err)
+					}
+					end, err := time.Parse(layout, v.End)
+					if err != nil {
+						log.Println(err)
+					}
+					sub := end.Sub(start).Minutes()
+					m[tag] += sub
+					total += sub
+				} else {
+					m[tag] += 0
 				}
-				end, err := time.Parse(layout, v.End)
-				if err != nil {
-					log.Println(err)
+				if i == 0 {
+					taskDatas = append(taskDatas, v)
 				}
-				sub := end.Sub(start).Minutes()
-				m[tag] += sub
-				total += sub
-			} else {
-				m[tag] += 0
 			}
 		}
 	}
@@ -130,12 +161,7 @@ func hasTag(task *model.ClockData, tag string) bool {
 
 func checkRange(task *model.ClockData, start time.Time, end time.Time) bool {
 	clockedTimeStart, err := time.Parse(layout, task.Start)
-	hour := time.Duration(clockedTimeStart.Hour())
-	minute := time.Duration(clockedTimeStart.Minute())
-	second := time.Duration(clockedTimeStart.Second())
-	clockedTimeStart = clockedTimeStart.Add(-hour * time.Hour)
-	clockedTimeStart = clockedTimeStart.Add(-minute * time.Minute)
-	clockedTimeStart = clockedTimeStart.Add(-second * time.Second)
+	clockedTimeStart = utils.TruncateDateHMS(clockedTimeStart)
 	if err != nil {
 		return false
 	}
