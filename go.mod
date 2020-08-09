@@ -1,4 +1,4 @@
-module taskiwi
+module github.com/zeroclock/taskiwi
 
 go 1.14
 

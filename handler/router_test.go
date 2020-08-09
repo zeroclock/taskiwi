@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"taskiwi/model"
+	"github.com/zeroclock/taskiwi/model"
 	"testing"
 )
 

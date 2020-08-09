@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"time"
 
-	"taskiwi/utils"
+	"github.com/zeroclock/taskiwi/utils"
 	"testing"
 )
 

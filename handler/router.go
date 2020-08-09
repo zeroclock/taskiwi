@@ -9,10 +9,10 @@ import (
 	"sort"
 	"time"
 
-	"taskiwi/config"
-	"taskiwi/model"
-	"taskiwi/utils"
-	"taskiwi/validation"
+	"github.com/zeroclock/taskiwi/config"
+	"github.com/zeroclock/taskiwi/model"
+	"github.com/zeroclock/taskiwi/utils"
+	"github.com/zeroclock/taskiwi/validation"
 
 	"github.com/labstack/echo"
 )

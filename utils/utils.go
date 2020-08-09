@@ -3,7 +3,7 @@ package utils
 import (
 	"time"
 	
-	"taskiwi/model"
+	"github.com/zeroclock/taskiwi/model"
 )
 
 func Unique(tags model.Tags) []string {

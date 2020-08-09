@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"taskiwi/model"
+	"github.com/zeroclock/taskiwi/model"
 )
 
 type Config struct {

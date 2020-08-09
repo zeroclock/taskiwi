@@ -1,9 +1,9 @@
 package main
 
 import (
-	"taskiwi/config"
-	"taskiwi/handler"
-	"taskiwi/validation"
+	"github.com/zeroclock/taskiwi/config"
+	"github.com/zeroclock/taskiwi/handler"
+	"github.com/zeroclock/taskiwi/validation"
 
 	"flag"
 
