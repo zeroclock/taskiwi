@@ -13,6 +13,7 @@ import {
   FormControl,
   Select,
   Chip,
+  TextareaAutosize,
 } from '@material-ui/core'
 import {
   MuiPickersUtilsProvider,
@@ -28,6 +29,8 @@ import { Aggregation } from '../model/Aggregation'
 import { format } from 'date-fns'
 import BarChart from './charts/BarChart'
 import DoughnutChart from './charts/DoughnutChart'
+import { fetchTasksByDate } from '../api/task'
+import { ClockDatas } from '../model/ClockDatas'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,6 +55,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     chip: {
       margin: 2,
+    },
+    textarea: {
+      width: 500,
+      minHeight: 300,
     },
   })
 )
@@ -92,6 +99,17 @@ function MainContent() {
   const [worktimes, setWorktimes] = React.useState<WorkTimes>([])
   const [from, setFrom] = React.useState<Date | null>(new Date())
   const [to, setTo] = React.useState<Date | null>(new Date())
+  const [pickDate, setPickDate] = React.useState<Date | null>(new Date())
+  const [cData, setCData] = React.useState<ClockDatas>([])
+
+  const clockDatasToTimeLine = (clockdatas: ClockDatas): string => {
+    return clockdatas.map((clockdata) => {
+      const time = `${clockdata.start.substr(10)} - ${clockdata.end.substr(10)}`
+      const task = clockdata.task
+      const tags = clockdata.tags.join('/')
+      return `${time} ${task} 【${tags}】`
+    }).join('\n')
+  }
 
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
@@ -127,7 +145,6 @@ function MainContent() {
       end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
     data.then((aggregation) => {
-      console.log(aggregation)
       setWorktimes(aggregation.WorkTimes)
     })
   }
@@ -141,6 +158,16 @@ function MainContent() {
     })
     data.then((aggregation) => {
       setWorktimes(aggregation.WorkTimes)
+    })
+  }
+
+  const handlePickDateChange = (date: Date | null, _: string | null | undefined) => {
+    setPickDate(date)
+    const data = fetchTasksByDate(
+      date != null ? format(date, 'yyyy-MM-dd') : '',
+    )
+    data.then((d) => {
+      setCData(d)
     })
   }
 
@@ -261,6 +288,40 @@ function MainContent() {
       <Grid item xs={6} justify="center">
         <Paper variant="outlined" elevation={3}>
           <DoughnutChart worktimes={worktimes} />
+        </Paper>
+      </Grid>
+      <Grid item xs={12} justify="center">
+        <Paper variant="outlined" elevation={3} className={classes.paper}>
+          <FormControl className={classes.formControl}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Grid container xs={12}>
+                <Grid item xs={12}>
+                  <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy/MM/dd"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="PickDate"
+                    value={pickDate}
+                    onChange={handlePickDateChange}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change from date',
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </MuiPickersUtilsProvider>
+          </FormControl>
+        </Paper>
+      </Grid>
+      <Grid item xs={12} justify="center">
+        <Paper variant="outlined" elevation={3} className={classes.paper}>
+          <TextareaAutosize
+            aria-label="Time Line"
+            defaultValue={clockDatasToTimeLine(cData)}
+            className={classes.textarea}
+          />
         </Paper>
       </Grid>
     </Grid>

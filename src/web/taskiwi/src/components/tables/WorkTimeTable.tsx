@@ -22,23 +22,39 @@ const headers = [
     id: 'worktime',
     numeric: true,
     disablePadding: false,
-    label: 'Work Time (minutes)',
+    label: 'Work Time (H:m)',
   },
   { id: 'percent', numeric: true, disablePadding: false, label: 'Percent (%)' },
 ]
 
 const createRowsFromProps = (props: Props) => {
   if (props.worktimes != null) {
-    return props.worktimes.map((worktime) => {
+    var totalTime = 0
+    var totalPercent = 0.0
+    var rows = props.worktimes.map((worktime) => {
+      totalTime += parseInt(worktime.time)
+      totalPercent += parseFloat(worktime.percent)
       return {
         tag: worktime.tag,
-        worktime: worktime.time,
+        worktime: minuteToHM(parseInt(worktime.time)),
         percent: worktime.percent,
       }
     })
+    rows.push({
+      tag: 'TOTAL',
+      worktime: minuteToHM(totalTime).toString(),
+      percent: totalPercent.toString(),
+    })
+    return rows
   } else {
     return []
   }
+}
+
+const minuteToHM = (minute: number): string => {
+  const hours = Math.floor(minute / 60)
+  const min = minute - (hours * 60)
+  return hours + ':' + ('00' + min.toString()).slice(-2)
 }
 
 const useStyles = makeStyles((theme) => ({

@@ -36,6 +36,5 @@ export const createDataFromWorktimes = (worktimes: WorkTimes, type: ChartType) =
       data: data,
     },
   ]
-  console.log(datasets)
   return {labels, datasets}
 }
