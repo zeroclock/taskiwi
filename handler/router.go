@@ -24,7 +24,7 @@ const layout_req = "2006-01-02"
 func InitRouting(e *echo.Echo) {
 	e.GET("/", indexHandler)
 	e.GET("/all", allTaskHandler)
-	e.GET("/allTags", allTagsHandler)
+	e.POST("/allTags", allTagsHandler)
 	e.POST("/aggregateTasks", aggregateTasks)
 	e.POST("/taskByDate", taskByDateHandler)
 }
@@ -48,10 +48,28 @@ func allTaskHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, config.GlobalConf.CData)
 }
 
-func allTagsHandler(c echo.Context) error {
+func allTagsHandler(c echo.Context) (err error) {
+	searchCondition := new(validation.TagByDateCondition)
+	if err = c.Bind(searchCondition); err != nil {
+		return
+	}
+	if err = c.Validate(searchCondition); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	conditionStart, err := time.Parse(layout_req, searchCondition.Start)
+	if err != nil {
+		log.Println(err)
+	}
+	conditionEnd, err := time.Parse(layout_req, searchCondition.End)
+	if err != nil {
+		log.Println(err)
+	}
+	
 	var tags []string
 	for _, v := range *config.GlobalConf.CData {
-		tags = append(tags, v.Tags...)
+		if checkRange(&v, conditionStart, conditionEnd) {
+			tags = append(tags, v.Tags...)
+		}
 	}
 
 	return c.JSON(http.StatusOK, utils.Unique(tags))

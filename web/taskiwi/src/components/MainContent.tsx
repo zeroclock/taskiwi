@@ -22,7 +22,7 @@ import {
 import DateFnsUtils from '@date-io/date-fns'
 import { fetchTags } from '../api/tag'
 import { fetchAggregation } from '../api/aggregation'
-import { AggregateTaskReq } from '../interface/request'
+import { AggregateTaskReq, TagsReq } from '../interface/request'
 import WorkTimeTable from './tables/WorkTimeTable'
 import { WorkTimes } from '../model/WorkTimes'
 import { Aggregation } from '../model/Aggregation'
@@ -134,6 +134,16 @@ const MainContent: React.FC = () => {
     return emptyAggregation
   }
 
+  const fetchTagsReq = async (params: TagsReq): Promise<Tags> => {
+    try {
+      const { data } = await fetchTags(params)
+      return data
+    } catch (e) {
+      console.log(e)
+      return []
+    }
+  }
+
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ): void => {
@@ -159,25 +169,41 @@ const MainContent: React.FC = () => {
 
   const handleFromChange = (date: Date | null): void => {
     setFrom(date)
-    const data = fetchAggregationReq({
-      tags: tagName.length ? tagName : tagList,
+    const d = fetchTagsReq({
       start: date != null ? format(date, 'yyyy-MM-dd') : '',
       end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
-    data.then((aggregation) => {
-      setWorktimes(aggregation.WorkTimes)
+    d.then((tags) => {
+      setTagName([])
+      setTagList(tags)
+      const data = fetchAggregationReq({
+        tags: tagName.length ? tagName : tagList,
+        start: date != null ? format(date, 'yyyy-MM-dd') : '',
+        end: to != null ? format(to, 'yyyy-MM-dd') : '',
+      })
+      data.then((aggregation) => {
+        setWorktimes(aggregation.WorkTimes)
+      })
     })
   }
 
   const handleToChange = (date: Date | null): void => {
+    setTagName([])
     setTo(date)
-    const data = fetchAggregationReq({
-      tags: tagName.length ? tagName : tagList,
-      start: from != null ? format(from, 'yyyy-MM-dd') : '',
-      end: date != null ? format(date, 'yyyy-MM-dd') : '',
+    const d = fetchTagsReq({
+      start: date != null ? format(date, 'yyyy-MM-dd') : '',
+      end: to != null ? format(to, 'yyyy-MM-dd') : '',
     })
-    data.then((aggregation) => {
-      setWorktimes(aggregation.WorkTimes)
+    d.then((tags) => {
+      setTagList(tags)
+      const data = fetchAggregationReq({
+        tags: tagName.length ? tagName : tagList,
+        start: from != null ? format(from, 'yyyy-MM-dd') : '',
+        end: date != null ? format(date, 'yyyy-MM-dd') : '',
+      })
+      data.then((aggregation) => {
+        setWorktimes(aggregation.WorkTimes)
+      })
     })
   }
 
@@ -191,19 +217,12 @@ const MainContent: React.FC = () => {
     })
   }
 
-  const fetchTagsReq = async (): Promise<Tags> => {
-    try {
-      const { data } = await fetchTags()
-      return data
-    } catch (e) {
-      console.log(e)
-      return []
-    }
-  }
-
   useEffect(() => {
-    const data = fetchTagsReq()
     const todayStr = format(new Date(), 'yyyy-MM-dd')
+    const data = fetchTagsReq({
+      start: todayStr,
+      end: todayStr,
+    })
     data.then((tags) => {
       setTagList(tags)
       const data = fetchAggregationReq({
@@ -288,16 +307,16 @@ const MainContent: React.FC = () => {
           <WorkTimeTable worktimes={worktimes} />
         </Paper>
       </Grid>
-      <Grid item xs={6} justify="center">
-        <Paper variant="outlined" elevation={3}>
+      {/* <Grid item xs={6} justify="center">
+          <Paper variant="outlined" elevation={3}>
           <BarChart worktimes={worktimes} />
-        </Paper>
-      </Grid>
-      <Grid item xs={6} justify="center">
-        <Paper variant="outlined" elevation={3}>
+          </Paper>
+          </Grid>
+          <Grid item xs={6} justify="center">
+          <Paper variant="outlined" elevation={3}>
           <DoughnutChart worktimes={worktimes} />
-        </Paper>
-      </Grid>
+          </Paper>
+          </Grid> */}
       <Grid item xs={12} justify="center">
         <Paper variant="outlined" elevation={3} className={classes.paper}>
           <FormControl className={classes.formControl}>

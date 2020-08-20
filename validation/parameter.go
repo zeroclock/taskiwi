@@ -17,6 +17,11 @@ type (
 		Date string `json:"date" validate:"required,is_date"`
 	}
 
+	TagByDateCondition struct {
+		Start string `json:"start" validate:"required,is_date"`
+		End string `json:"end" validate:"required,is_date"`
+	}
+
 	CustomValidator struct {
 		Validator *validator.Validate
 	}

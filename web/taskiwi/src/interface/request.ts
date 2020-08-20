@@ -3,3 +3,8 @@ export interface AggregateTaskReq {
   start: string
   end: string
 }
+
+export interface TagsReq {
+  start: string
+  end: string
+}
