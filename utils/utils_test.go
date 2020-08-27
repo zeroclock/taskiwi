@@ -29,3 +29,11 @@ func TestTruncateDateHMS(t *testing.T) {
 	result := utils.TruncateDateHMS(date)
 	assert.True(t, result.Equal(expected))
 }
+
+func TestSetDateHMSToEndTime(t *testing.T) {
+	const layout = "2006-01-02 15:04:05"
+	date, _ := time.Parse(layout, "2020-01-01 15:24:22")
+	expected, _ := time.Parse(layout, "2020-01-01 23:59:59")
+	result := utils.SetDateHMSToEndTime(date)
+	assert.True(t, result.Equal(expected))
+}

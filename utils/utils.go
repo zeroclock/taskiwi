@@ -29,3 +29,11 @@ func TruncateDateHMS(datetime time.Time) time.Time {
 	datetime = datetime.Add(-second * time.Second)
 	return datetime
 }
+
+func SetDateHMSToEndTime(datetime time.Time) time.Time {
+	datetime = TruncateDateHMS(datetime)
+	datetime = datetime.Add(time.Hour * 23)
+	datetime = datetime.Add(time.Minute * 59)
+	datetime = datetime.Add(time.Second * 59)
+	return datetime
+}
